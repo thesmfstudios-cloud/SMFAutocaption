@@ -153,14 +153,34 @@ cd /d "%~dp0"
 set "SMF_PYTHON=%CD%\.venv\Scripts\python.exe"
 set "SMF_NODE=%CD%\runtime\node\node.exe"
 set "SMF_FFMPEG=%CD%\runtime\ffmpeg\bin\ffmpeg.exe"
-if not exist "%SMF_PYTHON%" echo Python missing. Run setup again.&pause&exit /b 1
-if not exist "%SMF_NODE%" echo Node missing. Run setup again.&pause&exit /b 1
-if not exist "%SMF_FFMPEG%" echo FFmpeg missing. Run setup again.&pause&exit /b 1
-start "SMF Caption Studio Server" /min cmd /c "cd /d ""%CD%"" && set ""SMF_PYTHON=%SMF_PYTHON%"" && set ""FFMPEG=%SMF_FFMPEG%"" && ""%SMF_NODE%"" server.mjs"
+set "SMF_FFPROBE=%CD%\runtime\ffmpeg\bin\ffprobe.exe"
+if not exist "%SMF_PYTHON%" (
+  echo Python missing. Run setup again.
+  pause
+  exit /b 1
+)
+if not exist "%SMF_NODE%" (
+  echo Node missing. Run setup again.
+  pause
+  exit /b 1
+)
+if not exist "%SMF_FFMPEG%" (
+  echo FFmpeg missing. Run setup again.
+  pause
+  exit /b 1
+)
+if not exist "%SMF_FFPROBE%" (
+  echo FFprobe missing. Run setup again.
+  pause
+  exit /b 1
+)
+set "FFMPEG=%SMF_FFMPEG%"
+set "FFPROBE=%SMF_FFPROBE%"
+start "SMF Caption Studio Server" /min "%SMF_NODE%" "%CD%\server.mjs"
 for /l %%i in (1,1,30) do (
   powershell -NoProfile -Command "try { $r=Invoke-WebRequest -UseBasicParsing http://127.0.0.1:8787/api/health -TimeoutSec 1; if($r.StatusCode -eq 200){exit 0}else{exit 1} } catch { exit 1 }" >nul 2>&1
   if not errorlevel 1 goto ready
-  timeout /t 1 /nobreak >nul
+  powershell -NoProfile -Command "Start-Sleep -Seconds 1" >nul 2>&1
 )
 echo Server failed. Run DIAGNOSTICS.bat.
 pause
@@ -203,3 +223,4 @@ catch {
 finally {
   Stop-Transcript | Out-Null
 }
+
