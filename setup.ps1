@@ -54,7 +54,7 @@ Start-Transcript -Path $Log -Append | Out-Null
 
 try {
   Write-Host '============================================================'
-  Write-Host '          SMF STUDIO - CAPTION STUDIO v1.6'
+  Write-Host '          SMF STUDIO - CAPTION STUDIO v1.7'
   Write-Host '============================================================'
   Write-Host '[1/6] Copying application files...'
   Copy-Item -Path (Join-Path $Src '*') -Destination $Root -Recurse -Force
@@ -105,16 +105,45 @@ try {
   if (-not (Test-Path -LiteralPath $NodeExe)) { throw 'Node.js runtime missing.' }
 
   if (-not (Test-Path -LiteralPath $FFmpegExe)) {
-    $ffZip = Join-Path $env:TEMP 'smf-ffmpeg-release-essentials.zip'
-    Download-File 'https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip' $ffZip
-    $tmp = Join-Path $env:TEMP ('smf-ffmpeg-' + [guid]::NewGuid())
-    Expand-Archive $ffZip -DestinationPath $tmp -Force
-    $folder = Get-ChildItem $tmp -Directory | Select-Object -First 1
-    Ensure-Dir $FFRoot
-    Copy-Item -Path (Join-Path $folder.FullName '*') -Destination $FFRoot -Recurse -Force
-    Remove-Item $tmp -Recurse -Force
+    $ffZip = Join-Path $env:TEMP 'smf-ffmpeg-win64-gpl.zip'
+    $downloaded = $false
+    $mirrors = @(
+      'https://github.com/BtbN/FFmpeg-Builds/releases/latest/download/ffmpeg-n9.0-latest-win64-gpl-9.0.zip',
+      'https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip'
+    )
+    foreach ($u in $mirrors) {
+      try {
+        Write-Host "  Trying FFmpeg mirror: $u"
+        & curl.exe -L --fail --retry 3 --retry-delay 2 --connect-timeout 15 --max-time 900 -o $ffZip $u
+        if ($LASTEXITCODE -eq 0 -and (Test-Path -LiteralPath $ffZip) -and (Get-Item -LiteralPath $ffZip).Length -gt 50000000) {
+          $downloaded = $true
+          break
+        }
+      } catch {}
+    }
+    if ($downloaded) {
+      $tmp = Join-Path $env:TEMP ('smf-ffmpeg-' + [guid]::NewGuid())
+      Expand-Archive $ffZip -DestinationPath $tmp -Force
+      $folder = Get-ChildItem $tmp -Directory | Select-Object -First 1
+      Ensure-Dir $FFRoot
+      Copy-Item -Path (Join-Path $folder.FullName '*') -Destination $FFRoot -Recurse -Force
+      Remove-Item $tmp -Recurse -Force
+    } else {
+      Write-Host '  Direct mirrors failed. Trying WinGet FFmpeg...'
+      try {
+        winget install --id Gyan.FFmpeg.Shared -e --accept-source-agreements --accept-package-agreements --silent
+      } catch {}
+      $cmd = Get-Command ffmpeg.exe -ErrorAction SilentlyContinue
+      if ($cmd -and (Test-Path -LiteralPath $cmd.Source)) {
+        Ensure-Dir $FFRoot
+        Ensure-Dir (Join-Path $FFRoot 'bin')
+        Copy-Item -LiteralPath $cmd.Source -Destination $FFmpegExe -Force
+        $probe = Get-Command ffprobe.exe -ErrorAction SilentlyContinue
+        if ($probe) { Copy-Item -LiteralPath $probe.Source -Destination $FFprobeExe -Force }
+      }
+    }
   }
-  if (-not (Test-Path -LiteralPath $FFmpegExe)) { throw 'FFmpeg runtime missing.' }
+  if (-not (Test-Path -LiteralPath $FFmpegExe)) { throw 'FFmpeg runtime missing. Check network access and run setup again.' }
 
   Write-Host '[6/6] Creating launchers...'
   @'
