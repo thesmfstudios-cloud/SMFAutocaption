@@ -16,6 +16,7 @@ $FFRoot = Join-Path $Runtime 'ffmpeg'
 $FFmpegExe = Join-Path $FFRoot 'bin\ffmpeg.exe'
 $FFprobeExe = Join-Path $FFRoot 'bin\ffprobe.exe'
 $Log = Join-Path $Root 'setup.log'
+$PipLog = Join-Path $Root 'pip-install.log'
 
 function Ensure-Dir([string]$p) {
   if (-not (Test-Path -LiteralPath $p)) { New-Item -ItemType Directory -Path $p -Force | Out-Null }
@@ -53,7 +54,7 @@ Start-Transcript -Path $Log -Append | Out-Null
 
 try {
   Write-Host '============================================================'
-  Write-Host '          SMF STUDIO - CAPTION STUDIO v1.5'
+  Write-Host '          SMF STUDIO - CAPTION STUDIO v1.6'
   Write-Host '============================================================'
   Write-Host '[1/6] Copying application files...'
   Copy-Item -Path (Join-Path $Src '*') -Destination $Root -Recurse -Force
@@ -79,12 +80,16 @@ try {
   if ($LASTEXITCODE -ne 0) { throw 'venv creation failed.' }
 
   Write-Host '[4/6] Installing faster-whisper...'
-  & $VenvPy -m pip install --upgrade pip setuptools wheel *>> $Log
-  if ($LASTEXITCODE -ne 0) { throw 'pip bootstrap failed.' }
-  & $VenvPy -m pip install --only-binary=:all: 'faster-whisper>=1.2.0' *>> $Log
-  if ($LASTEXITCODE -ne 0) { throw 'faster-whisper installation failed. Check setup.log.' }
-  & $VenvPy -c "import faster_whisper,sys; print('AI OK'); print(sys.executable)" *>> $Log
-  if ($LASTEXITCODE -ne 0) { throw 'faster-whisper import test failed.' }
+  Write-Host ("  Pip log: " + $PipLog)
+  Add-Content -LiteralPath $PipLog -Value ("=== pip bootstrap " + (Get-Date -Format s) + " ===")
+  & $VenvPy -m pip install --upgrade pip setuptools wheel *>> $PipLog
+  if ($LASTEXITCODE -ne 0) { throw ("pip bootstrap failed. Check " + $PipLog) }
+  Add-Content -LiteralPath $PipLog -Value ("=== faster-whisper install " + (Get-Date -Format s) + " ===")
+  & $VenvPy -m pip install --only-binary=:all: 'faster-whisper>=1.2.0' *>> $PipLog
+  if ($LASTEXITCODE -ne 0) { throw ("faster-whisper installation failed. Check " + $PipLog) }
+  Add-Content -LiteralPath $PipLog -Value ("=== import test " + (Get-Date -Format s) + " ===")
+  & $VenvPy -c "import faster_whisper,sys; print('AI OK'); print(sys.executable)" *>> $PipLog
+  if ($LASTEXITCODE -ne 0) { throw ("faster-whisper import test failed. Check " + $PipLog) }
 
   Write-Host '[5/6] Preparing portable Node.js + FFmpeg...'
   if (-not (Test-Path -LiteralPath $NodeExe)) {
