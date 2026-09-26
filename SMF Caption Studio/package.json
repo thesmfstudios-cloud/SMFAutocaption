@@ -1,0 +1,8 @@
+{
+  "name":"smf-caption-studio",
+  "version":"1.5.0",
+  "private":true,
+  "type":"module",
+  "scripts":{"start":"node server.mjs","dev":"node server.mjs"},
+  "description":"SMF Studio local caption and typography tool"
+}
