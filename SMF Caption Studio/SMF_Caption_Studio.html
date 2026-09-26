@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SMF Caption Studio</title>
+<style>
+:root{--bg:#08090b;--panel:#101114;--panel2:#15161a;--line:#27292f;--text:#f4f5f7;--muted:#81848d;--accent:#ff3349;--good:#58d6a3;--warn:#f3bb60;--shadow:rgba(0,0,0,.35)}
+*{box-sizing:border-box}html,body,#app{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{min-height:100vh}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.app{min-height:100vh;display:flex;flex-direction:column}.topbar{height:68px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(8,9,11,.92);backdrop-filter:blur(16px);position:sticky;top:0;z-index:20}.brand{display:flex;align-items:center;gap:11px}.mark{width:34px;height:34px;border:1px solid #373941;border-radius:9px;display:grid;place-items:center;font-weight:950;font-size:10px;background:#13151a}.brand-title{font-size:12px;font-weight:900;letter-spacing:.18em}.brand-sub{font-size:8px;letter-spacing:.16em;color:#6e717a;margin-top:3px}.top-actions{display:flex;gap:8px;align-items:center}.status{display:flex;align-items:center;gap:7px;color:#7f838d;font-size:10px;margin-right:4px}.status i{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 12px rgba(88,214,163,.55)}
+.btn{height:36px;border:1px solid var(--line);border-radius:9px;background:#14161a;color:#e7e9ed;padding:0 13px;font-size:11px;font-weight:800}.btn:hover{border-color:#41444d}.btn.primary{background:linear-gradient(180deg,#ff4a5f,#dc2035);border-color:#ff5264;box-shadow:0 7px 24px rgba(255,51,73,.17)}.btn.outline{background:transparent}.btn.small{height:29px;padding:0 9px;font-size:10px}.btn.danger{color:#ff9aa5}.btn:disabled{opacity:.45;cursor:not-allowed}
+.workspace{display:grid;grid-template-columns:240px minmax(520px,1fr) 290px;min-height:calc(100vh - 68px)}.left,.right{background:#0d0e11}.left{border-right:1px solid var(--line);padding:17px 14px}.right{border-left:1px solid var(--line);padding:17px 14px}.main{padding:17px 18px 28px;min-width:0}.eyebrow,.sect-title{font-size:9px;letter-spacing:.18em;font-weight:900;color:#6d7079}.sect-title{margin:0 0 9px}.section{margin-bottom:18px}.project{border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,#13151a,#101114);padding:11px;display:flex;gap:9px;align-items:center}.project-icon{width:31px;height:31px;border-radius:8px;background:#1a1c21;border:1px solid #30323a;display:grid;place-items:center;color:#a9adb7}.project-meta strong{display:block;font-size:10px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.project-meta span{display:block;font-size:8px;color:#686b74;margin-top:3px}.field{display:block;margin:9px 0}.field>span{display:flex;justify-content:space-between;align-items:center;font-size:9px;color:#8a8d96;margin-bottom:5px}.field select,.field input[type=text],.field input[type=number]{width:100%;height:32px;border-radius:8px;border:1px solid var(--line);background:#121419;color:#e5e7eb;padding:0 9px;outline:none;font-size:10px}.field select:focus,.field input:focus,textarea:focus{border-color:#454954}.switchrow{display:flex;justify-content:space-between;align-items:center}.switch{position:relative;width:35px;height:20px}.switch input{display:none}.switch span{position:absolute;inset:0;background:#272a31;border-radius:999px;border:1px solid #383b43}.switch span:after{content:"";position:absolute;width:14px;height:14px;top:2px;left:2px;border-radius:50%;background:#9498a1;transition:.15s}.switch input:checked+span{background:#44151c;border-color:#79202d}.switch input:checked+span:after{left:17px;background:#ff6b79}
+.drop{border:1px dashed #353842;border-radius:12px;padding:15px 10px;text-align:center;background:rgba(255,255,255,.012)}.drop.drag{border-color:var(--accent);background:rgba(255,51,73,.06)}.drop .icon{font-size:19px;color:#ff6878;margin-bottom:5px}.drop strong{font-size:10px;display:block}.drop small{font-size:8px;color:#676b74;display:block;margin:4px 0 9px}.wide{width:100%}
+.head{display:flex;align-items:end;justify-content:space-between;margin-bottom:12px}.head h1{font-size:21px;letter-spacing:-.04em;margin:4px 0 0}.pill{font-size:9px;color:#8e929c;border:1px solid var(--line);background:#121419;border-radius:99px;padding:6px 8px}.card{border:1px solid var(--line);border-radius:15px;background:linear-gradient(180deg,#111317,#0d0f12);box-shadow:0 20px 60px var(--shadow);overflow:hidden}.preview{padding:12px}.canvas-wrap{height:600px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 20%,#1c1f26,#0d0f12 70%);border:1px solid #292c34;border-radius:11px;overflow:hidden;position:relative}.canvas-wrap video{width:100%;height:100%;object-fit:contain;background:#050608}.stage{position:absolute;inset:0;pointer-events:none;display:flex;justify-content:center;align-items:flex-start}.caption-layer{position:absolute;left:6%;right:6%;top:var(--pos);transform:translateY(-50%);text-align:var(--align);font-family:var(--font);font-size:var(--size);font-weight:var(--weight);line-height:.95;letter-spacing:-.035em;text-shadow:0 4px 15px rgba(0,0,0,.75);display:flex;flex-wrap:wrap;justify-content:center;gap:.24em .3em}.caption-word{display:inline-block;color:var(--color);transform-origin:center;transition:transform .09s ease,opacity .12s ease,color .12s ease}.caption-word.active{color:var(--accent);transform:scale(1.08) translateY(-1px)}.animation-pop .caption-word.active{animation:pop .22s ease-out}.animation-slide .caption-layer{animation:slide .25s ease-out}.animation-fade .caption-layer{animation:fade .22s ease-out}.animation-kinetic .caption-word.active{animation:kinetic .18s ease-out}@keyframes pop{0%{transform:scale(.88)}100%{transform:scale(1.08)}}@keyframes kinetic{0%{opacity:0;transform:translateY(9px) scale(.8)}100%{opacity:1;transform:scale(1.08)}}@keyframes slide{0%{transform:translate(-22px,-50%);opacity:.2}100%{transform:translate(0,-50%);opacity:1}}@keyframes fade{0%{opacity:0}100%{opacity:1}}
+.video-bar{display:flex;align-items:center;gap:8px;margin-top:9px}.video-bar input[type=range]{flex:1}.time{font-size:9px;color:#777b84;min-width:95px;text-align:right}.play{width:35px!important;padding:0!important}.range{accent-color:var(--accent)}.footer-line{display:flex;align-items:center;justify-content:space-between;margin-top:8px}.filename{font-size:9px;color:#6e7179;max-width:55%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mode-buttons{display:flex;gap:5px}.mode-buttons button{height:25px;padding:0 8px;border:1px solid var(--line);background:#131519;border-radius:7px;color:#8c9099;font-size:8px}.mode-buttons button.active{border-color:#75313c;color:#fff;background:#241116}
+.editor{margin-top:12px}.editor-head,.editor-foot{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;border-bottom:1px solid var(--line);font-size:9px;color:#92959d}.editor-foot{border-top:1px solid var(--line);border-bottom:0;color:#626670}.editor textarea{display:block;width:100%;min-height:110px;background:#0c0e11;border:0;padding:11px;color:#eceef2;resize:vertical;outline:none;font-size:11px;line-height:1.55}.caption-list{max-height:360px;overflow:auto}.caption-row{display:grid;grid-template-columns:62px 1fr;gap:8px;padding:9px 10px;border-bottom:1px solid #1e2026}.caption-row.active{background:#1c1114}.caption-row:last-child{border-bottom:0}.caption-time button{width:100%;height:28px;border:1px solid #272a31;background:#13151a;color:#9296a0;border-radius:7px;font-size:8px}.caption-time small{display:block;text-align:center;font-size:7px;color:#5f626b;margin-top:4px}.caption-content{min-width:0}.caption-text{width:100%;min-height:34px;background:#111318;border:1px solid #25282f;border-radius:7px;color:#f0f2f5;padding:7px;font-size:10px;resize:vertical}.caption-meta{display:flex;gap:5px;margin-top:6px}.caption-meta input{width:72px;height:24px;background:#111318;border:1px solid #25282f;border-radius:6px;color:#adb1bb;font-size:8px;padding:0 6px}.caption-meta button{height:24px;background:#14161b;border:1px solid #25282f;border-radius:6px;color:#9ca0aa;font-size:8px;padding:0 6px}.caption-meta button:hover{color:#fff}
+.range-row{display:grid;grid-template-columns:1fr 48px;gap:8px;align-items:center}.range-row input[type=range]{width:100%;accent-color:var(--accent)}.range-row output{font-size:9px;color:#c7cad1;text-align:right}.color-row{display:flex;align-items:center;gap:8px}.color-row input[type=color]{width:32px;height:25px;border:1px solid var(--line);padding:0;background:#111318;border-radius:6px}.font-preview{height:32px;border:1px solid var(--line);border-radius:8px;background:#121419;display:flex;align-items:center;padding:0 9px;font-size:10px;color:#d7d9df}.hr{height:1px;background:var(--line);margin:13px 0}.actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.tip{font-size:8px;line-height:1.6;color:#686b74;margin-top:10px}.savebox{border:1px solid var(--line);border-radius:10px;padding:9px;background:#111318}.savebox input{width:100%;height:28px;border-radius:7px;border:1px solid #282b32;background:#0c0e11;color:#e4e6eb;padding:0 8px;font-size:9px;margin-bottom:7px}.preset-list{max-height:160px;overflow:auto;margin-top:6px}.preset-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #1d1f25;font-size:8px;color:#9ca0a8}.preset-item:last-child{border-bottom:0}.preset-item button{background:transparent;border:0;color:#747983;font-size:9px}
+.progress{height:8px;background:#191b20;border-radius:99px;overflow:hidden;margin-top:8px}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff3349,#ff6b79);transition:.18s}.toast{position:fixed;right:18px;bottom:18px;max-width:360px;background:#15181d;border:1px solid #2f333b;border-radius:10px;padding:10px 12px;color:#dfe2e8;font-size:10px;box-shadow:0 15px 40px rgba(0,0,0,.4);z-index:100}.toast.err{border-color:#6e2934}.badge{font-size:8px;color:#7e838e}.empty{padding:25px;text-align:center;color:#5c6068;font-size:9px}.modal-back{position:fixed;inset:0;background:rgba(0,0,0,.68);display:grid;place-items:center;z-index:80}.modal{width:min(460px,calc(100vw - 28px));background:#121418;border:1px solid #31343c;border-radius:14px;box-shadow:0 30px 90px rgba(0,0,0,.6);padding:15px}.modal h3{margin:0;font-size:14px}.modal p{font-size:9px;color:#898d97;line-height:1.55}.modal pre{max-height:260px;overflow:auto;background:#0b0d10;padding:9px;border-radius:8px;font-size:8px;color:#aeb3bd}.modal-actions{display:flex;justify-content:flex-end;gap:7px}
+@media(max-width:1180px){.workspace{grid-template-columns:210px minmax(0,1fr)}.right{grid-column:1/-1;border-left:0;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 12px}.right>*{min-width:0}.right .sect-title,.right .hr,.right .tip{grid-column:1/-1}.caption-list{max-height:260px}}
+@media(max-width:790px){.workspace{grid-template-columns:1fr}.left{border-right:0;border-bottom:1px solid var(--line)}.right{display:block}.main{padding:12px}.canvas-wrap{height:470px}.topbar{padding:0 12px}.status{display:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const PRESET_DEFAULTS={
+ 'SMF Bold':{font:'Arial Black',size:58,weight:900,color:'#ffffff',accent:'#ff3349',shadow:.6,align:'center',animation:'Pop',maxWords:4,position:78},
+ 'SMF Clean':{font:'Inter',size:48,weight:700,color:'#ffffff',accent:'#ffffff',shadow:.45,align:'center',animation:'Fade',maxWords:5,position:82},
+ 'SMF Kinetic':{font:'Arial Black',size:54,weight:900,color:'#ffffff',accent:'#ffd400',shadow:.55,align:'center',animation:'Word Pop',maxWords:3,position:74},
+ 'SMF News':{font:'Arial Black',size:46,weight:900,color:'#ffffff',accent:'#ff3349',shadow:.68,align:'left',animation:'Slide',maxWords:6,position:82},
+ 'SMF Cinematic':{font:'Georgia',size:44,weight:700,color:'#ffffff',accent:'#ededed',shadow:.58,align:'center',animation:'Fade',maxWords:6,position:84}
+};
+const CUSTOM_KEY='smf-caption-presets-v2';
+const saved=JSON.parse(localStorage.getItem(CUSTOM_KEY)||'{}');
+const presets={...PRESET_DEFAULTS,...saved};
+const state={
+ file:null,fileUrl:null,fileName:'No video imported',duration:0,width:0,height:0,jobId:null,serverReady:false,status:'Idle',progress:0,aspect:'9:16',
+ transcript:'',segments:[],captions:[],active:0,language:'auto',captionLength:'Auto',alignment:'Center',highlight:true,punctuation:true,
+ preset:'SMF Bold',currentStyle:null,rendering:false,renderStatus:'',videoTime:0,aiReady:false,ffmpegReady:false,aiMessage:''
+};
+function $(s){return document.querySelector(s)}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function toast(msg,err=false){const d=document.createElement('div');d.className='toast'+(err?' err':'');d.textContent=msg;document.body.append(d);setTimeout(()=>d.remove(),3200)}
+function fmt(sec){sec=Math.max(0,Number(sec)||0);let h=Math.floor(sec/3600);let m=Math.floor((sec%3600)/60);let s=Math.floor(sec%60);return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}
+function srtTime(sec){sec=Math.max(0,Number(sec)||0);let h=Math.floor(sec/3600);let m=Math.floor((sec%3600)/60);let s=Math.floor(sec%60);let ms=Math.round((sec-Math.floor(sec))*1000);return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')},${String(ms).padStart(3,'0')}`}
+function hexToASS(hex,alpha='00'){hex=String(hex).replace('#','').padEnd(6,'0').slice(0,6);return `&H${alpha}${hex.slice(4,6)}${hex.slice(2,4)}${hex.slice(0,2)}`.toUpperCase()}
+function currentPreset(){return presets[state.preset]}
+function lengthWords(){if(state.captionLength==='Short')return 3;if(state.captionLength==='Medium')return 5;if(state.captionLength==='Long')return 8;return currentPreset().maxWords}
+function normalizeWords(words,start,end){
+ if(words&&words.length)return words.map(w=>({word:String(w.word||'').trim(),start:Number(w.start),end:Number(w.end)})).filter(w=>w.word);
+ const parts=String(arguments[0]||'').split(/\s+/).filter(Boolean);const out=[];const span=Math.max(.1,end-start);parts.forEach((word,i)=>out.push({word,start:start+span*i/parts.length,end:start+span*(i+1)/parts.length}));return out;
+}
+function buildFromWords(allWords,totalDuration){
+ const maxWords=lengthWords(), maxChars= state.captionLength==='Long'?52: state.captionLength==='Short'?26:40;
+ const out=[];let buf=[];
+ const push=()=>{if(!buf.length)return;const words=buf.map(w=>({...w}));out.push({text:words.map(w=>w.word).join(' '),start:words[0].start,end:Math.max(words[words.length-1].end,words[0].start+.35),words});buf=[];};
+ for(let i=0;i<allWords.length;i++){
+  const w={word:String(allWords[i].word).trim(),start:Number(allWords[i].start)||0,end:Number(allWords[i].end)||((Number(allWords[i].start)||0)+.2)};if(!w.word)continue;buf.push(w);
+  const prev=buf[buf.length-2];const pause=prev?(w.start-prev.end):0;const punct=/[.!?।…:]$/.test(w.word);const text=buf.map(x=>x.word).join(' ');
+  if(buf.length>=maxWords || text.length>=maxChars || pause>.48 || (buf.length>=2&&punct)) push();
+ }
+ push();
+ if(!out.length&&state.transcript) { const words=state.transcript.trim().split(/\s+/).map((word,i,arr)=>({word,start:totalDuration*i/arr.length,end:totalDuration*(i+1)/arr.length}));return buildFromWords(words,totalDuration) }
+ return out;
+}
+function flattenTranscription(result){
+ const words=[];for(const seg of result.segments||[]) for(const w of seg.words||[]) words.push({word:w.word,start:w.start,end:w.end});
+ state.segments=result.segments||[]; state.transcript=(result.segments||[]).map(s=>s.text).join(' ').replace(/\s+/g,' ').trim();state.languageDetected=result.language||'';
+ state.captions=buildFromWords(words,result.duration||state.duration);state.active=0;
+}
+function rebuildFromTranscript(){
+ state.captions=buildFromWords(state.transcript.split(/\s+/).filter(Boolean).map((word,i,arr)=>({word,start:state.duration*i/arr.length,end:state.duration*(i+1)/arr.length})),state.duration||28);state.active=0;render();
+}
+function updateCaptionText(i,value){const c=state.captions[i];if(!c)return;const parts=value.trim().split(/\s+/).filter(Boolean);const span=Math.max(.05,c.end-c.start);c.text=value;c.words=parts.map((word,j)=>({word,start:c.start+span*j/Math.max(1,parts.length),end:c.start+span*(j+1)/Math.max(1,parts.length)}));}
+function ensureWords(c){
+ if(c.words?.length)return c.words;
+ const arr=c.text.split(/\s+/).filter(Boolean);const span=Math.max(.1,c.end-c.start);return arr.map((word,i)=>({word,start:c.start+span*i/arr.length,end:c.start+span*(i+1)/arr.length}));
+}
+function setStyleFromState(){const p=currentPreset();state.currentStyle={...p,align:state.alignment.toLowerCase(),font:p.font,width:canvasSize().w,height:canvasSize().h,fps:30}}
+function canvasSize(){const a=state.aspect||'9:16';if(a==='16:9')return{w:1920,h:1080};if(a==='1:1')return{w:1080,h:1080};if(a==='4:5')return{w:1080,h:1350};return{w:1080,h:1920}}
+function activeCaption(){return state.captions[state.active]||{text:'Your captions appear here',start:0,end:2,words:[{word:'Your',start:0,end:.4},{word:'captions',start:.4,end:.95},{word:'appear',start:.95,end:1.5},{word:'here',start:1.5,end:2}]}}
+function currentWordIndex(c,t){const ws=ensureWords(c);let idx=0;for(let i=0;i<ws.length;i++){if(t>=ws[i].start&&t<=ws[i].end){idx=i;break}if(t>ws[i].end)idx=i+1}return Math.min(Math.max(idx,0),ws.length-1)}
+function render(){
+ const p=currentPreset(), c=activeCaption(), tc=state.videoTime; const wi=currentWordIndex(c,tc); setStyleFromState();
+ setStyleFromState();
+ document.querySelector('#app').innerHTML=`
+ <div class="app">
+  <header class="topbar"><div class="brand"><div class="mark">SMF</div><div><div class="brand-title">SMF STUDIO</div><div class="brand-sub">CAPTION ENGINE / PRO</div></div></div>
+   <div class="top-actions"><div class="status"><i></i><span>${esc(state.status)}</span></div><button class="btn" id="newBtn">New</button><button class="btn outline" id="projectBtn">Save Project</button><button class="btn primary" id="exportBtn">Export</button></div>
+  </header>
+  <div class="workspace">
+   <aside class="left">
+    <div class="section"><div class="sect-title">PROJECT</div><div class="project"><div class="project-icon">▣</div><div class="project-meta"><strong>${esc(state.fileName)}</strong><span>${state.file?`${state.width||'?'}×${state.height||'?'} · ${state.duration.toFixed(2)}s`:'Import a video to begin'}</span></div></div></div>
+    <div class="section"><div class="sect-title">CAPTIONS</div>
+     ${selectField('Language','language',['auto','hi','en','mr'],state.language)}
+     ${selectField('Caption length','captionLength',['Auto','Short','Medium','Long'],state.captionLength)}
+     ${selectField('Alignment','alignment',['Center','Left','Right'],state.alignment)}
+     ${switchField('Word highlight','highlight',state.highlight)}
+     ${switchField('Auto punctuation','punctuation',state.punctuation)}
+    </div>
+    <div class="drop" id="drop"><div class="icon">↥</div><strong>Drop video here</strong><small>MP4 · MOV · WebM · up to 4 GB</small><button class="btn outline small" id="browse">Browse</button><button class="btn primary small wide" id="transcribe" ${state.file?'':'disabled'}>${state.status==='Transcribing'?'Working…':'Auto Transcribe'}</button><div class="tip" style="margin-top:7px">${esc(state.aiMessage||'Checking local AI…')}</div><input id="file" type="file" accept="video/*" hidden></div>
+    <div class="section" style="margin-top:16px"><div class="sect-title">TOOLS</div><div class="actions-grid"><button class="btn small" id="rebuild">Rebuild timing</button><button class="btn small" id="emphasis">Emphasize words</button><button class="btn small" id="splitAll">Smart split</button><button class="btn small" id="clearCaps">Clear</button></div></div>
+   </aside>
+   <main class="main">
+    <div class="head"><div><div class="eyebrow">LIVE PREVIEW</div><h1>Caption timeline</h1></div><div class="pill">${state.captions.length} captions · ${state.languageDetected||'language not detected'}</div></div>
+    <section class="card preview"><div class="canvas-wrap" id="canvasWrap">${state.fileUrl?'<video id="video" src="'+state.fileUrl+'" playsinline preload="metadata"></video>':'<div style="font-size:54px;font-weight:950;color:#20232a;letter-spacing:-.08em">SMF</div>'}<div class="stage ${animClass(p.animation)}"><div class="caption-layer" style="--font:'${esc(p.font)}',Inter,sans-serif;--size:${p.size}px;--weight:${p.weight};--color:${p.color};--accent:${p.accent};--pos:${p.position}%;--align:${p.align}">${ensureWords(c).map((w,i)=>`<span class="caption-word ${state.highlight&&i===wi?'active':''}">${esc(w.word)}</span>`).join('')}</div></div></div>
+     <div class="video-bar"><button class="btn play" id="play">${state.videoTime>0&&$('#video')?.paused===false?'❚❚':'▶'}</button><input id="seek" class="range" type="range" min="0" max="${Math.max(0.01,state.duration)}" step=".01" value="${state.videoTime}"/><div class="time">${fmt(state.videoTime)} / ${fmt(state.duration)}</div></div>
+     <div class="footer-line"><div class="filename">${esc(state.fileName)}</div><div class="mode-buttons">${['9:16','16:9','1:1','4:5'].map(a=>`<button class="${state.aspect===a?'active':''}" data-aspect="${a}">${a}</button>`).join('')}</div></div>
+    </section>
+    <section class="card editor"><div class="editor-head"><span>Transcript</span><span class="badge">${state.status}${state.renderStatus?' · '+state.renderStatus:''}</span></div><textarea id="transcript" placeholder="Paste transcript or use Auto Transcribe">${esc(state.transcript)}</textarea><div class="editor-foot"><span>Word-timed segmentation</span><button class="btn small" id="applyTranscript">Apply transcript → rebuild timing</button></div></section>
+    <section class="card editor"><div class="editor-head"><span>CAPTION EDITOR</span><span class="badge">Click a row to preview</span></div><div class="caption-list">${state.captions.length?state.captions.map((c,i)=>captionRow(c,i)).join(''):'<div class="empty">No captions yet. Import a video and transcribe, or paste a transcript.</div>'}</div></section>
+   </main>
+   <aside class="right">
+    <div class="sect-title">TYPOGRAPHY</div>
+    ${selectField('Preset','preset',Object.keys(presets),state.preset)}
+    <div class="field"><span>Font</span><div class="font-preview" style="font-family:'${esc(p.font)}'">SMF Studio Caption</div></div>
+    ${rangeField('Size','size',28,100,p.size)}
+    ${rangeField('Weight','weight',300,1000,p.weight)}
+    <div class="field"><span>Text / accent</span><div class="color-row"><input id="textColor" type="color" value="${p.color}"/><input id="accentColor" type="color" value="${p.accent}"/><span class="badge">Text · Active word</span></div></div>
+    ${rangeField('Shadow','shadow',0,1,p.shadow,.05)}
+    ${selectField('Animation','animation',['Pop','Fade','Word Pop','Slide','None'],p.animation)}
+    ${selectField('Canvas','aspect',['9:16','16:9','1:1','4:5'],state.aspect)}
+    <div class="hr"></div>
+    <div class="sect-title">EXPORT</div>
+    <div class="actions-grid"><button class="btn primary small" id="srt">SRT</button><button class="btn small" id="json">Project JSON</button><button class="btn small" id="renderMp4" ${state.jobId?'':'disabled'}>Render MP4</button><button class="btn small" id="renderProres" ${state.jobId?'':'disabled'}>Alpha MOV</button></div>
+    ${state.progress>0?`<div class="progress"><i style="width:${state.progress}%"></i></div><div class="tip">${esc(state.renderStatus||state.status)}</div>`:''}
+    <div class="tip">MP4 burns the captions into the video. Alpha MOV renders a transparent caption layer for Premiere/Resolve. SRT stays editable.</div>
+    <div class="hr"></div>
+    <div class="sect-title">PRESET LIBRARY</div>
+    <div class="savebox"><input id="presetName" placeholder="Save current style as…"/><button class="btn small wide" id="savePreset">Save preset</button><div class="preset-list">${Object.keys(saved).length?Object.keys(saved).map(k=>`<div class="preset-item"><span>${esc(k)}</span><button data-delpreset="${esc(k)}">Delete</button></div>`).join(''):'<div class="badge" style="padding-top:7px">No custom presets yet.</div>'}</div></div>
+   </aside>
+  </div>
+ </div>`;
+ bind();
+}
+function animClass(a){return a==='Word Pop'?'animation-kinetic':a==='Pop'?'animation-pop':a==='Fade'?'animation-fade':a==='Slide'?'animation-slide':''}
+function selectField(label,id,opts,value){return `<label class="field"><span>${label}</span><select id="${id}">${opts.map(o=>`<option value="${esc(o)}" ${o===value?'selected':''}>${esc(o)}</option>`).join('')}</select></label>`}
+function switchField(label,id,v){return `<label class="field switchrow"><span>${label}</span><label class="switch"><input id="${id}" type="checkbox" ${v?'checked':''}/><span></span></label></label>`}
+function rangeField(label,id,min,max,value,step=1){return `<label class="field"><span>${label}<output id="${id}Out">${Number(value).toFixed(step<1?2:0)}</output></span><div class="range-row"><input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${value}"/></div></label>`}
+function captionRow(c,i){const dur=Math.max(.01,c.end-c.start);return `<div class="caption-row ${i===state.active?'active':''}" data-row="${i}"><div class="caption-time"><button data-jump="${i}">${fmt(c.start)}</button><small>${dur.toFixed(2)}s</small></div><div class="caption-content"><textarea class="caption-text" data-text="${i}">${esc(c.text)}</textarea><div class="caption-meta"><input data-start="${i}" type="number" min="0" step=".01" value="${c.start.toFixed(2)}"/><input data-end="${i}" type="number" min="0" step=".01" value="${c.end.toFixed(2)}"/><button data-split="${i}">Split</button><button data-merge="${i}" ${i===0?'disabled':''}>Merge</button><button data-delete="${i}" class="danger">Delete</button></div></div></div>`}
+function bind(){
+ const file=$('#file'),browse=$('#browse'),drop=$('#drop'); if(browse) browse.onclick=()=>file.click(); if(file) file.onchange=e=>handleFile(e.target.files?.[0]);
+ if(drop){['dragenter','dragover'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('drag')}));['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove('drag')}));drop.addEventListener('drop',ev=>handleFile(ev.dataTransfer.files?.[0]));}
+ $('#transcribe')?.addEventListener('click',transcribe);$('#newBtn')?.addEventListener('click',newProject);$('#projectBtn')?.addEventListener('click',downloadProject);$('#exportBtn')?.addEventListener('click',()=>$('#srt')?.click());
+ $('#rebuild')?.addEventListener('click',rebuildFromTranscript);$('#splitAll')?.addEventListener('click',()=>{state.captions=buildFromWords(ensureAllWords(),state.duration);render()});$('#clearCaps')?.addEventListener('click',()=>{state.captions=[];render()});$('#emphasis')?.addEventListener('click',emphasize);
+ $('#applyTranscript')?.addEventListener('click',()=>{state.transcript=$('#transcript').value;rebuildFromTranscript();toast('Transcript rebuilt with fresh timing')});
+ ['language','captionLength','alignment','highlight','punctuation'].forEach(id=>$('#'+id)?.addEventListener('change',e=>{state[id]=e.target.type==='checkbox'?e.target.checked:e.target.value;if(id==='captionLength') rebuildFromExistingWords();else if(id==='alignment'){currentPreset().align=state.alignment.toLowerCase();render()}else render()}));
+ $('#preset')?.addEventListener('change',e=>{state.preset=e.target.value;render()});
+ ['size','weight','shadow'].forEach(id=>$('#'+id)?.addEventListener('input',e=>{currentPreset()[id]=Number(e.target.value);$('#'+id+'Out').textContent=Number(e.target.value).toFixed(id==='shadow'?2:0);updatePreviewOnly()}));
+ $('#textColor')?.addEventListener('input',e=>{currentPreset().color=e.target.value;updatePreviewOnly()});$('#accentColor')?.addEventListener('input',e=>{currentPreset().accent=e.target.value;updatePreviewOnly()});
+ $('#animation')?.addEventListener('change',e=>{currentPreset().animation=e.target.value;updatePreviewOnly()});$('#aspect')?.addEventListener('change',e=>{state.aspect=e.target.value;setStyleFromState();render()});
+ document.querySelectorAll('[data-aspect]').forEach(b=>b.onclick=()=>{state.aspect=b.dataset.aspect;setStyleFromState();render()});
+ $('#video')?.addEventListener('loadedmetadata',e=>{state.duration=e.target.duration;state.width=e.target.videoWidth;state.height=e.target.videoHeight;render()});
+ $('#video')?.addEventListener('timeupdate',e=>{state.videoTime=e.target.currentTime;syncActiveFromTime();updatePreviewOnly(false);const s=$('#seek');if(s)s.value=state.videoTime;const tm=document.querySelector('.time');if(tm)tm.textContent=`${fmt(state.videoTime)} / ${fmt(state.duration)}`});
+ $('#play')?.addEventListener('click',()=>{const v=$('#video');if(!v)return;if(v.paused)v.play();else v.pause();});$('#seek')?.addEventListener('input',e=>{state.videoTime=Number(e.target.value);if($('#video'))$('#video').currentTime=state.videoTime;syncActiveFromTime();updatePreviewOnly()});
+ document.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>jump(Number(b.dataset.jump)));document.querySelectorAll('[data-row]').forEach(r=>r.onclick=e=>{if(e.target.closest('textarea,input,button'))return;jump(Number(r.dataset.row))});
+ document.querySelectorAll('[data-text]').forEach(t=>t.oninput=()=>{const i=Number(t.dataset.text);updateCaptionText(i,t.value);updatePreviewOnly()});
+ document.querySelectorAll('[data-start]').forEach(x=>x.onchange=()=>{const i=Number(x.dataset.start);state.captions[i].start=Math.max(0,Number(x.value)||0);state.captions[i].words=ensureWords(state.captions[i]);render()});document.querySelectorAll('[data-end]').forEach(x=>x.onchange=()=>{const i=Number(x.dataset.end);state.captions[i].end=Math.max(state.captions[i].start+.05,Number(x.value)||0);state.captions[i].words=ensureWords(state.captions[i]);render()});
+ document.querySelectorAll('[data-split]').forEach(b=>b.onclick=()=>splitCaption(Number(b.dataset.split)));document.querySelectorAll('[data-merge]').forEach(b=>b.onclick=()=>mergeCaption(Number(b.dataset.merge)));document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>{state.captions.splice(Number(b.dataset.delete),1);state.active=Math.min(state.active,state.captions.length-1);render()});
+ $('#srt')?.addEventListener('click',downloadSRT);$('#json')?.addEventListener('click',downloadProject);$('#renderMp4')?.addEventListener('click',()=>startRender('mp4'));$('#renderProres')?.addEventListener('click',()=>startRender('prores'));$('#savePreset')?.addEventListener('click',savePreset);document.querySelectorAll('[data-delpreset]').forEach(b=>b.onclick=()=>deletePreset(b.dataset.delpreset));
+}
+function handleFile(f){if(!f)return;if(!f.type.startsWith('video/'))return toast('Please choose a video file',true);if(state.fileUrl)URL.revokeObjectURL(state.fileUrl);state.file=f;state.fileUrl=URL.createObjectURL(f);state.fileName=f.name;state.status='Video loaded';state.captions=[];state.transcript='';state.videoTime=0;render();setTimeout(()=>loadMetadataAndUpload(),0)}
+async function loadMetadataAndUpload(){const v=document.createElement('video');v.preload='metadata';v.src=state.fileUrl;v.onloadedmetadata=async()=>{state.duration=v.duration;state.width=v.videoWidth;state.height=v.videoHeight;render();try{const r=await fetch('/api/upload',{method:'POST',headers:{'X-File-Name':encodeURIComponent(state.file.name)},body:state.file});const j=await r.json();if(!r.ok)throw new Error(j.error||'Upload failed');state.jobId=j.jobId;state.duration=j.duration||state.duration;state.width=j.width||state.width;state.height=j.height||state.height;state.serverReady=true;state.status='Ready';toast('Local video ready for rendering')}catch(e){state.status='Preview only';toast('Server upload unavailable. SRT and preview still work.',true)}render()};v.onerror=()=>toast('Could not read video metadata',true)}
+async function transcribe(){
+ if(!state.jobId)return toast('Wait for the local video upload to finish',true);
+ if(!state.aiReady){await checkHealth(false);if(!state.aiReady)return toast('Whisper AI is not installed. Run install_ai.bat and restart the app.',true)}
+ state.status='Transcribing';state.progress=2;state.renderStatus='Starting AI…';render();
+ try{
+  const q=new URLSearchParams({language:state.language||'auto',model:'small'});
+  const r=await fetch(`/api/transcribe/${state.jobId}?${q}`,{method:'POST'});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(j.error||'Transcription request failed');
+  await pollTranscription();
+ }catch(e){state.status='Error';state.renderStatus='';state.progress=0;render();toast(e.message,true)}
+}
+async function pollTranscription(){
+ for(;;){
+  await new Promise(r=>setTimeout(r,800));
+  const r=await fetch(`/api/job/${state.jobId}`);const j=await r.json();
+  state.progress=Number(j.progress||state.progress||0);
+  state.renderStatus=j.stage||'Transcribing…';
+  if(j.status==='transcribed'){state.progress=100;flattenTranscription(j.transcript);state.status=`Transcribed · ${j.transcript.language||''}`;state.renderStatus='Complete';render();toast(`Transcription complete · ${state.captions.length} captions`);return}
+  if(j.status==='error'){state.status='Error';state.renderStatus='';state.progress=0;render();toast(j.error||j.lastLog||'Transcription failed',true);return}
+  updateStatusDom(`${j.stage||'Transcribing…'} · ${Math.round(state.progress)}%`)
+ }
+}
+function syncActiveFromTime(){const t=state.videoTime;const i=state.captions.findIndex(c=>t>=c.start&&t<=c.end);if(i>=0&&i!==state.active){state.active=i;const rows=document.querySelectorAll('[data-row]');rows.forEach(x=>x.classList.remove('active'));rows[i]?.classList.add('active')}}
+function updatePreviewOnly(rerender=true){const c=activeCaption(),p=currentPreset();const wrap=$('.caption-layer');if(!wrap)return;if(rerender){wrap.innerHTML=ensureWords(c).map((w,i)=>`<span class="caption-word ${state.highlight&&i===currentWordIndex(c,state.videoTime)?'active':''}">${esc(w.word)}</span>`).join('')};wrap.style.setProperty('--size',p.size+'px');wrap.style.setProperty('--weight',p.weight);wrap.style.setProperty('--color',p.color);wrap.style.setProperty('--accent',p.accent);wrap.style.setProperty('--pos',p.position+'%');wrap.style.setProperty('--align',p.align)}
+function jump(i){if(!state.captions[i])return;state.active=i;state.videoTime=state.captions[i].start;if($('#video'))$('#video').currentTime=state.videoTime;render()}
+function ensureAllWords(){const ws=[];for(const c of state.captions)ws.push(...ensureWords(c));return ws}
+function rebuildFromExistingWords(){state.captions=buildFromWords(ensureAllWords(),state.duration);render()}
+function splitCaption(i){const c=state.captions[i];if(!c)return;const words=ensureWords(c);if(words.length<2)return toast('Need at least 2 words to split');const mid=Math.ceil(words.length/2);const a=words.slice(0,mid),b=words.slice(mid);state.captions.splice(i,1,{text:a.map(w=>w.word).join(' '),start:a[0].start,end:a[a.length-1].end,words:a},{text:b.map(w=>w.word).join(' '),start:b[0].start,end:b[b.length-1].end,words:b});state.active=i;render()}
+function mergeCaption(i){if(i<=0)return;const a=state.captions[i-1],b=state.captions[i],words=[...ensureWords(a),...ensureWords(b)];state.captions.splice(i-1,2,{text:words.map(w=>w.word).join(' '),start:a.start,end:b.end,words});state.active=i-1;render()}
+function emphasize(){const stop=new Set('a an the and or but to of in on for is am are was were this that you we it me he she they with from as at by be have has had do did so very just really'.split(' '));state.captions=state.captions.map(c=>{const words=ensureWords(c);const filtered=words.filter(w=>!stop.has(w.word.toLowerCase().replace(/[^a-zA-Z0-9]/g,'')));const emphasis=new Set(filtered.sort((a,b)=>b.word.replace(/[^\p{L}\p{N}]/gu,'').length-a.word.replace(/[^\p{L}\p{N}]/gu,'').length).slice(0,1).map(w=>w.word));return {...c,emphasis:[...emphasis]}});toast('Emphasis candidates marked for export styling');render()}
+function savePreset(){const name=$('#presetName')?.value.trim();if(!name)return toast('Enter a preset name',true);saved[name]={...currentPreset()};localStorage.setItem(CUSTOM_KEY,JSON.stringify(saved));presets[name]=saved[name];state.preset=name;toast(`Saved preset: ${name}`);render()}
+function deletePreset(name){delete saved[name];delete presets[name];localStorage.setItem(CUSTOM_KEY,JSON.stringify(saved));if(state.preset===name)state.preset='SMF Bold';render()}
+function downloadBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
+function downloadSRT(){if(!state.captions.length)return toast('No captions to export',true);const s=state.captions.map((c,i)=>`${i+1}\n${srtTime(c.start)} --> ${srtTime(c.end)}\n${c.text}\n`).join('\n');downloadBlob(new Blob([s],{type:'application/x-subrip'}),`${state.fileName.replace(/\.[^.]+$/,'')||'captions'}.srt`);toast('SRT exported')}
+function projectData(){return {version:2,app:'SMF Caption Studio',fileName:state.fileName,duration:state.duration,width:state.width,height:state.height,transcript:state.transcript,captions:state.captions,style:{...currentPreset(),align:state.alignment.toLowerCase(),width:canvasSize().w,height:canvasSize().h},language:state.language}}
+function downloadProject(){downloadBlob(new Blob([JSON.stringify(projectData(),null,2)],{type:'application/json'}),`${state.fileName.replace(/\.[^.]+$/,'')||'smf-project'}.smf.json`);toast('Project JSON exported')}
+async function startRender(format){if(!state.jobId)return toast('Import/upload the video first',true);setStyleFromState();state.progress=1;state.renderStatus='Preparing render';render();try{const r=await fetch(`/api/render/${state.jobId}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({format,captions:state.captions,style:state.currentStyle})});const j=await r.json();if(!r.ok)throw new Error(j.error||'Render failed');pollRender(j.jobId,format)}catch(e){state.renderStatus='Error';render();toast(e.message,true)}}
+function updateProgressDom(){const bar=document.querySelector('.progress i');if(bar)bar.style.width=state.progress+'%';const badge=document.querySelector('.editor-head .badge');if(badge)badge.textContent=state.status+(state.renderStatus?' · '+state.renderStatus:'')}
+function updateStatusDom(txt){const badge=document.querySelector('.editor-head .badge');if(badge)badge.textContent=txt;const st=document.querySelector('.status span');if(st)st.textContent=txt}
+async function pollRender(id,format){for(;;){await new Promise(r=>setTimeout(r,900));const r=await fetch(`/api/job/${id}`);const j=await r.json();state.progress=Number(j.progress||0);state.renderStatus=j.status==='rendering'?`Rendering ${Math.round(state.progress)}%`:j.status;updateProgressDom();if(j.status==='done'){state.progress=100;state.renderStatus='Done';updateProgressDom();const a=document.createElement('a');a.href=`/api/download/${id}`;a.download='';document.body.append(a);a.click();a.remove();toast(format==='mp4'?'Captioned MP4 ready':'Alpha MOV ready');return}if(j.status==='error'){state.renderStatus='Error';render();toast(j.error||'Render failed',true);return}}}
+function newProject(){if(state.fileUrl)URL.revokeObjectURL(state.fileUrl);Object.assign(state,{file:null,fileUrl:null,fileName:'No video imported',duration:0,width:0,height:0,jobId:null,serverReady:false,status:'Idle',progress:0,aspect:'9:16',transcript:'',segments:[],captions:[],active:0,videoTime:0,renderStatus:''});render()}
+async function checkHealth(showToast=false){try{const r=await fetch('/api/health');const h=await r.json();state.serverReady=!!h.ok;state.aiReady=!!h.fasterWhisper;state.ffmpegReady=!!h.ffmpeg;state.aiMessage=state.aiReady?`Whisper ${h.whisperVersion||'ready'}`:'AI not installed';if(showToast){if(state.aiReady)toast('Local AI is ready');else toast('AI not installed. Run install_ai.bat in the SMF Caption Studio folder.',true)}render();return h}catch(e){state.serverReady=false;state.aiReady=false;state.ffmpegReady=false;state.aiMessage='Local server unavailable';if(showToast)toast('Local server is not reachable. Start SMF Caption Studio again.',true);render();return null}}
+(async()=>{await checkHealth(false);render()})();
+</script>
+</body>
+</html>
