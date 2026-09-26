@@ -15,6 +15,9 @@ const python = process.env.SMF_PYTHON || (process.platform === 'win32'
 const ffmpeg = process.env.FFMPEG || (process.platform === 'win32'
   ? path.join(root,'runtime','ffmpeg','bin','ffmpeg.exe')
   : 'ffmpeg');
+const ffprobe = process.env.FFPROBE || (process.platform === 'win32'
+  ? path.join(root,'runtime','ffmpeg','bin','ffprobe.exe')
+  : 'ffprobe');
 
 const publicDir = root;
 const jobs = new Map();
@@ -82,13 +85,11 @@ function renderASS(captions,style){
 function assTime(sec){sec=Math.max(0,Number(sec)||0);const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=Math.floor(sec%60),cs=Math.floor((sec-Math.floor(sec))*100);return h+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+'.'+String(cs).padStart(2,'0');}
 function hexASS(c){c=String(c||'#fff').replace('#','');if(c.length===3)c=c.split('').map(x=>x+x).join('');return '&H00'+c.slice(4,6)+c.slice(2,4)+c.slice(0,2);}
 function getJob(j){return jobs.get(j);}
-function inputInfo(file){return new Promise((resolve,reject)=>{spawn('ffprobe',['-v','error','-show_entries','format=duration:stream=width,height','-of','json',file],{windowsHide:true}).on('error',reject).on('close',()=>{try{const s=fs.readFileSync(file+'.probe.json','utf8');resolve(JSON.parse(s));}catch{resolve(null);}});});}
-
 async function probe(file){
   try{
-    const p=spawn('ffprobe',['-v','error','-show_entries','format=duration:stream=width,height','-of','json',file],{windowsHide:true});
+    const p=spawn(ffprobe,['-v','error','-select_streams','v:0','-show_entries','format=duration:stream=width,height','-of','json',file],{windowsHide:true});
     let out='';p.stdout.on('data',d=>out+=d);await new Promise((res,rej)=>{p.on('error',rej);p.on('close',c=>c?rej(new Error('ffprobe failed')):res())});const j=JSON.parse(out);
-    const v=(j.streams||[]).find(x=>x.codec_type==='video')||{};return {duration:Number(j.format?.duration||0),width:Number(v.width||0),height:Number(v.height||0)};
+    const v=j.streams?.[0]||{};return {duration:Number(j.format?.duration||0),width:Number(v.width||0),height:Number(v.height||0)};
   }catch{return {duration:0,width:0,height:0};}
 }
 
@@ -125,11 +126,11 @@ async function startRender(job,format){
   job.output=output;
   try{
     if(format==='mp4'){
-      await run(ffmpeg,['-y','-i',job.input,'-vf',"ass="+ass.replace(/\\/g,'/').replace(/:/g,'\\:'),'-c:v','libx264','-preset','medium','-crf','18','-c:a','aac','-b:a','192k',output]);
+      await run(ffmpeg,['-y','-i',job.input,'-vf','ass=captions.ass','-c:v','libx264','-preset','medium','-crf','18','-c:a','aac','-b:a','192k',output],{cwd:work});
     }else if(format==='prores'){
-      await run(ffmpeg,['-y','-f','lavfi','-i','color=c=black@0.0:s=1080x1920:r=30:d='+Math.max(.1,job.duration),'-vf',"ass="+ass.replace(/\\/g,'/').replace(/:/g,'\\:'),'-c:v','prores_ks','-profile:v','4','-pix_fmt','yuva444p10le','-an',output]);
+      await run(ffmpeg,['-y','-f','lavfi','-i','color=c=black@0.0:s=1080x1920:r=30:d='+Math.max(.1,job.duration),'-vf','ass=captions.ass','-c:v','prores_ks','-profile:v','4','-pix_fmt','yuva444p10le','-an',output],{cwd:work});
     }else{
-      await run(ffmpeg,['-y','-i',job.input,'-vf',"ass="+ass.replace(/\\/g,'/').replace(/:/g,'\\:'),'-c:v','libvpx-vp9','-crf','30','-b:v','0','-c:a','libopus',output]);
+      await run(ffmpeg,['-y','-i',job.input,'-vf','ass=captions.ass','-c:v','libvpx-vp9','-crf','30','-b:v','0','-c:a','libopus',output],{cwd:work});
     }
     job.status='done';job.stage='Complete';job.progress=100;
   }catch(e){job.status='error';job.stage='Error';job.error=e.message;job.lastLog=e.stderr||e.message;}
@@ -139,9 +140,9 @@ const server=http.createServer(async(req,res)=>{
   try{
     const u=new URL(req.url,'http://127.0.0.1:'+port);
     if(u.pathname==='/api/health'&&req.method==='GET'){
-      const ai=fs.existsSync(python);const ff=fs.existsSync(ffmpeg)||ffmpeg==='ffmpeg';
+      const ai=fs.existsSync(python);const ff=fs.existsSync(ffmpeg)||ffmpeg==='ffmpeg';const fp=fs.existsSync(ffprobe)||ffprobe==='ffprobe';
       let fw=false,ver='';if(ai){try{const x=await run(python,['-c',"import faster_whisper; print(getattr(faster_whisper,'__version__','installed'))"]);fw=true;ver=x.out.trim().split(/\r?\n/).pop();}catch{}}
-      return json(res,200,{ok:true,fasterWhisper:fw,whisperVersion:ver,ffmpeg:ff,python,server:'SMF Caption Studio'});
+      return json(res,200,{ok:true,fasterWhisper:fw,whisperVersion:ver,ffmpeg:ff,ffprobe:fp,python,server:'SMF Caption Studio'});
     }
     if(u.pathname==='/api/upload'&&req.method==='POST'){
       const jobId=id(),dir=path.join(tempRoot(),jobId);fs.mkdirSync(dir,{recursive:true});
@@ -181,3 +182,4 @@ const server=http.createServer(async(req,res)=>{
 });
 function readJSON(req){return new Promise((resolve,reject)=>{const c=[];req.on('data',x=>c.push(x));req.on('end',()=>{try{resolve(JSON.parse(Buffer.concat(c).toString('utf8')||'{}'))}catch(e){reject(e)}});req.on('error',reject)});}
 server.listen(port,'127.0.0.1',()=>console.log('SMF Caption Studio running at http://127.0.0.1:'+port));
+
